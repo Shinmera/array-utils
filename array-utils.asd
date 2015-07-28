@@ -7,7 +7,7 @@
 (in-package #:cl-user)
 (asdf:defsystem array-utils
   :name "Array-Utils"
-  :version "0.1.14"
+  :version "1.1.0"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
@@ -15,4 +15,5 @@
   :homepage "https://github.com/Shinmera/array-utils"
   :serial T
   :components ((:file "utils"))
-  :depends-on ())
+  :depends-on ()
+  :in-order-to ((asdf:test-op (asdf:test-op :array-utils-test))))
