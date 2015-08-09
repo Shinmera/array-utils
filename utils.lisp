@@ -111,14 +111,6 @@ CONTENTS --- If provided, uses the contents to fill the new space. If |N| is gre
                do (setf (aref array cursor) fill))))))
   array)
 
-(defun vector-push-extend-front (element vector)
-  "Pushes the element onto the front of the vector and extends if necessary.
-This operation is very costly and takes O(n) time as each element needs to
-be shifted as per ARRAY-SHIFT."
-  (array-shift vector :n 1)
-  (setf (aref vector 0) element)
-  (fill-pointer vector))
-
 (defun vector-push-extend-position (element vector position)
   "Pushes the element into the specified position and shifts everything
 to the right to make space. This is potentially very costly as all
@@ -127,21 +119,31 @@ elements after the given position need to be shifted as per ARRAY-SHIFT."
   (setf (aref vector position) element)
   (fill-pointer vector))
 
-(defun vector-pop-front (vector)
-  "Pops the first element off the vector and returns it.
+(defun vector-push-extend-front (element vector)
+  "Pushes the element onto the front of the vector and extends if necessary.
 This operation is very costly and takes O(n) time as each element needs to
-be shifted as per ARRAY-SHIFT."
-  (let ((front (aref vector 0)))
-    (array-shift vector :n -1)
-    front))
+be shifted as per ARRAY-SHIFT.
+
+See VECTOR-PUSH-EXTEND-POSITION"
+  (vector-push-extend-position element vector 0))
 
 (defun vector-pop-position (vector position)
   "Pops the element at the given position of the vector and returns it.
 This is potentially very costly as all elements after the given position
 need to be shifted back as per ARRAY-SHIFT."
-  (let ((el (aref vector position)))
+  (let ((el (aref vector position))
+        (prevlen (length vector)))
     (array-shift vector :n -1 :from (1+ position))
+    (ensure-array-size vector (max 0 (1- prevlen)))
     el))
+
+(defun vector-pop-front (vector)
+  "Pops the first element off the vector and returns it.
+This operation is very costly and takes O(n) time as each element needs to
+be shifted as per ARRAY-SHIFT.
+
+See VECTOR-POP-POSITION"
+  (vector-pop-position vector 0))
 
 (defun vector-append (vector sequence &optional position)
   "Appends all elements of the sequence at position of the vector and returns it.
