@@ -131,11 +131,10 @@ See VECTOR-PUSH-EXTEND-POSITION"
   "Pops the element at the given position of the vector and returns it.
 This is potentially very costly as all elements after the given position
 need to be shifted back as per ARRAY-SHIFT."
-  (let ((el (aref vector position))
-        (prevlen (length vector)))
-    (array-shift vector :n -1 :from (1+ position))
-    (ensure-array-size vector (max 0 (1- prevlen)))
-    el))
+  (if (= (1- (length vector)) position)
+      (vector-pop vector)
+      (prog1 (aref vector position)
+        (array-shift vector :n -1 :from (1+ position)))))
 
 (defun vector-pop-front (vector)
   "Pops the first element off the vector and returns it.
