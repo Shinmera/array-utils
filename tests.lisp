@@ -261,6 +261,10 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
         1)
     (is arr
         #(0 2 3)))
+  (let ((arr (cp *array*)))
+    (is (array-utils:vector-pop-position arr 3) 3)
+    (is arr
+        #(0 1 2)))
   (signals error (array-utils:vector-pop-position (cp *array*) -1))
   (signals error (array-utils:vector-pop-position (cp *array*) 5)))
 
