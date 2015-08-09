@@ -7,7 +7,7 @@
 (in-package #:cl-user)
 (asdf:defsystem array-utils
   :name "Array-Utils"
-  :version "1.1.0"
+  :version "1.1.1"
   :license "Artistic"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
