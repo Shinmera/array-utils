@@ -12,7 +12,9 @@
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "A few utilities for working with arrays."
-  :homepage "https://github.com/Shinmera/array-utils"
+  :homepage "https://Shinmera.github.io/array-utils/"
+  :bug-tracker "https://github.com/Shinmera/array-utils/issues"
+  :source-control (:git "https://github.com/Shinmera/array-utils.git")
   :serial T
   :components ((:file "utils"))
   :depends-on ()
