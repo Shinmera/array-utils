@@ -10,4 +10,5 @@
   :license "Artistic"
   :description "Tests for the array-utils package"
   :components ((:file "tests"))
-  :depends-on (:array-utils))
+  :depends-on (:array-utils :parachute)
+  :perform (asdf:test-op (op c) (uiop:symbol-call :parachute :test :array-utils-test)))
