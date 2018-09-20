@@ -147,8 +147,7 @@ in the vector.
 
 See VECTOR-POP-POSITION"
   (decf (fill-pointer vector))
-  (multiple-value-prog1 (values (aref vector position) vector)
-    (shiftf (aref vector position) (aref vector (length vector)))))
+  (shiftf (aref vector position) (aref vector (length vector))))
 
 (defun vector-pop-front (vector)
   "Pops the first element off the vector and returns it.
