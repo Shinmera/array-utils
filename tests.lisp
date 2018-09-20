@@ -255,6 +255,14 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
         #(1 2 3)))
   (signals error (array-utils:vector-pop-front #())))
 
+(define-test vector-pop-front* ()
+  (let ((arr (cp *array*)))
+    (is (array-utils:vector-pop-front* arr)
+        0)
+    (is arr
+        #(3 1 2)))
+  (signals error (array-utils:vector-pop-front #())))
+
 (define-test vector-pop-position ()
   (let ((arr (cp *array*)))
     (is (array-utils:vector-pop-position arr 1)
@@ -267,6 +275,19 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
         #(0 1 2)))
   (signals error (array-utils:vector-pop-position (cp *array*) -1))
   (signals error (array-utils:vector-pop-position (cp *array*) 5)))
+
+(define-test vector-pop-position* ()
+  (let ((arr (cp *array*)))
+    (is (array-utils:vector-pop-position* arr 1)
+        1)
+    (is arr
+        #(0 3 2)))
+  (let ((arr (cp *array*)))
+    (is (array-utils:vector-pop-position arr 3) 3)
+    (is arr
+        #(0 1 2)))
+  (signals error (array-utils:vector-pop-position* (cp *array*) -1))
+  (signals error (array-utils:vector-pop-position* (cp *array*) 5)))
 
 (define-test vector-append ()
   (is (array-utils:vector-append (cp *array*) #(4 5 6))

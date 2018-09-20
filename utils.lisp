@@ -14,7 +14,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
    #:vector-push-extend-front
    #:vector-push-extend-position
    #:vector-pop-front
+   #:vector-pop-front*
    #:vector-pop-position
+   #:vector-pop-position*
    #:vector-append))
 (in-package #:org.shirakumo.array-utils)
 
@@ -130,23 +132,44 @@ See VECTOR-PUSH-EXTEND-POSITION"
 (defun vector-pop-position (vector position)
   "Pops the element at the given position of the vector and returns it.
 This is potentially very costly as all elements after the given position
-need to be shifted back as per ARRAY-SHIFT."
+need to be shifted back as per ARRAY-SHIFT.
+
+See VECTOR-POP-POSITION*"
   (if (= (1- (length vector)) position)
       (vector-pop vector)
       (prog1 (aref vector position)
         (array-shift vector :n -1 :from (1+ position)))))
+
+(defun vector-pop-position* (vector position)
+  "Pops the element at the given position of the vector and returns it.
+This is faster than VECTOR-POP-POSITION, but does not preserve the order of elements
+in the vector.
+
+See VECTOR-POP-POSITION"
+  (decf (fill-pointer vector))
+  (shiftf (aref vector position) (aref vector (length vector))))
 
 (defun vector-pop-front (vector)
   "Pops the first element off the vector and returns it.
 This operation is very costly and takes O(n) time as each element needs to
 be shifted as per ARRAY-SHIFT.
 
+See VECTOR-POP-FRONT*
 See VECTOR-POP-POSITION"
   (vector-pop-position vector 0))
 
+(defun vector-pop-front* (vector)
+  "Pops the first element off the vector and returns it.
+This is faster than VECTOR-POP-FRONT, but does not preserve the order of elements
+in the vector.
+
+See VECTOR-POP-FRONT
+See VECTOR-POP-POSITION"
+  (vector-pop-position* vector 0))
+
 (defun vector-append (vector sequence &optional position)
   "Appends all elements of the sequence at position of the vector and returns it.
- This is potentially very costly as all elements after the given position
+This is potentially very costly as all elements after the given position
 need to be shifted back as per ARRAY-SHIFT."
   (let ((position (or position (length vector))))
     (array-shift vector :n (length sequence) :from position)
