@@ -304,5 +304,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
             vector-push-extend-front
             vector-push-extend-position
             vector-pop-front
+            vector-pop-front*
             vector-pop-position
+            vector-pop-position*
             vector-append)))
