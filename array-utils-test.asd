@@ -7,7 +7,7 @@
 (asdf:defsystem array-utils-test
   :version "1.0.0"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
-  :license "Artistic"
+  :license "zlib"
   :description "Tests for the array-utils package"
   :components ((:file "tests"))
   :depends-on (:array-utils :parachute)
