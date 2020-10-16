@@ -36,7 +36,10 @@
   :parent array-utils
   (same (eas 4) #(0 1 2 3))
   (same (eas 3) #(0 1 2))
-  (same (eas 5) #(0 1 2 3 0)))
+  (is = 5 (length (eas 5)))
+  (true (loop for a across *array*
+              for b across (eas 5)
+              always (eql a b))))
 
 (define-test array-shift
   :parent array-utils
