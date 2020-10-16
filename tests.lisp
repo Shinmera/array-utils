@@ -27,8 +27,16 @@
 (defun eas (&rest params)
   (apply #'array-utils:ensure-array-size (cp *array*) params))
 
+(defun same-array (a b)
+  (and (= (length a) (length b))
+       (loop for ae across a
+             for be across b
+             always (or (eql ae '_)
+                        (eql be '_)
+                        (eql ae be)))))
+
 (defmacro same (form exp)
-  `(is equalp ,exp ,form))
+  `(is same-array ,exp ,form))
 
 (define-test array-utils)
 
@@ -36,10 +44,7 @@
   :parent array-utils
   (same (eas 4) #(0 1 2 3))
   (same (eas 3) #(0 1 2))
-  (is = 5 (length (eas 5)))
-  (true (loop for a across *array*
-              for b across (eas 5)
-              always (eql a b))))
+  (same (eas 5) #(0 1 2 3 _)))
 
 (define-test array-shift
   :parent array-utils
@@ -76,7 +81,7 @@
   (same (as :n 4 :adjust T :to 1)
         #(0 1 2 3 0))
   (same (as :n 4 :adjust T :from 1 :to 2)
-        #(0 1 2 3 0 1))
+        #(0 1 2 3 _ 1))
   ;; With filling
   (same (as :n 1 :adjust NIL :fill NIL)
         #(NIL 0 1 2))
@@ -139,7 +144,7 @@
   :parent array-utils
   :depends-on (vector-push-extend-position)
   (let ((arr (cp *array*)))
-    (same (array-utils:vector-push-extend-front 5 arr)
+    (is = (array-utils:vector-push-extend-front 5 arr)
           5)
     (same arr
           #(5 0 1 2 3))))
@@ -148,7 +153,7 @@
   :parent array-utils
   :depends-on (array-shift)
   (let ((arr (cp *array*)))
-    (same (array-utils:vector-push-extend-position 5 arr 1)
+    (is = (array-utils:vector-push-extend-position 5 arr 1)
           5)
     (same arr
           #(0 5 1 2 3))))
@@ -157,7 +162,7 @@
   :parent array-utils
   :depends-on (vector-pop-position)
   (let ((arr (cp *array*)))
-    (same (array-utils:vector-pop-front arr)
+    (is = (array-utils:vector-pop-front arr)
           0)
     (same arr
           #(1 2 3)))
@@ -167,7 +172,7 @@
   :parent array-utils
   :depends-on (vector-pop-position*)
   (let ((arr (cp *array*)))
-    (same (array-utils:vector-pop-front* arr)
+    (is = (array-utils:vector-pop-front* arr)
           0)
     (same arr
           #(3 1 2)))
@@ -177,12 +182,12 @@
   :parent array-utils
   :depends-on (array-shift)
   (let ((arr (cp *array*)))
-    (same (array-utils:vector-pop-position arr 1)
+    (is = (array-utils:vector-pop-position arr 1)
           1)
     (same arr
           #(0 2 3)))
   (let ((arr (cp *array*)))
-    (same (array-utils:vector-pop-position arr 3) 3)
+    (is = (array-utils:vector-pop-position arr 3) 3)
     (same arr
           #(0 1 2)))
   (fail (array-utils:vector-pop-position (cp *array*) -1))
@@ -191,12 +196,12 @@
 (define-test vector-pop-position*
   :parent array-utils
   (let ((arr (cp *array*)))
-    (same (array-utils:vector-pop-position* arr 1)
+    (is = (array-utils:vector-pop-position* arr 1)
           1)
     (same arr
           #(0 3 2)))
   (let ((arr (cp *array*)))
-    (same (array-utils:vector-pop-position arr 3) 3)
+    (is = (array-utils:vector-pop-position arr 3) 3)
     (same arr
           #(0 1 2)))
   (fail (array-utils:vector-pop-position* (cp *array*) -1))
