@@ -184,12 +184,21 @@
   (let ((arr (cp *array*)))
     (is = (array-utils:vector-pop-position arr 1)
           1)
+    (is eq (aref arr 3) NIL)
     (same arr
           #(0 2 3)))
   (let ((arr (cp *array*)))
     (is = (array-utils:vector-pop-position arr 3) 3)
+    (is eq (aref arr 3) NIL)
     (same arr
           #(0 1 2)))
+  (let ((arr (make-array 4 :initial-contents "asdf"
+                           :element-type 'character
+                           :fill-pointer 4)))
+    (is char= (array-utils:vector-pop-position arr 1)
+        #\s)
+    (same arr
+          "adf"))
   (fail (array-utils:vector-pop-position (cp *array*) -1))
   (fail (array-utils:vector-pop-position (cp *array*) 5)))
 

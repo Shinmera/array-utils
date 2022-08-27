@@ -134,20 +134,34 @@ See VECTOR-PUSH-EXTEND-POSITION"
 This is potentially very costly as all elements after the given position
 need to be shifted back as per ARRAY-SHIFT.
 
+If the array has an element-type of T, the element moved beyond the fill
+pointer is set to NIL to avoid a memory leak.
+
 See VECTOR-POP-POSITION*"
-  (if (= (1- (length vector)) position)
-      (vector-pop vector)
-      (prog1 (aref vector position)
-        (array-shift vector :n -1 :from (1+ position)))))
+  (if (eql T (array-element-type vector))
+      (if (= (1- (length vector)) position)
+          (prog1 (vector-pop vector)
+            (setf (aref vector position) NIL))
+          (prog1 (aref vector position)
+            (array-shift vector :n -1 :from (1+ position) :fill NIL)))
+      (if (= (1- (length vector)) position)
+          (vector-pop vector)
+          (prog1 (aref vector position)
+            (array-shift vector :n -1 :from (1+ position))))))
 
 (defun vector-pop-position* (vector position)
   "Pops the element at the given position of the vector and returns it.
 This is faster than VECTOR-POP-POSITION, but does not preserve the order of elements
 in the vector.
 
+If the array has an element-type of T, the element moved beyond the fill
+pointer is set to NIL to avoid a memory leak.
+
 See VECTOR-POP-POSITION"
   (decf (fill-pointer vector))
-  (shiftf (aref vector position) (aref vector (length vector))))
+  (if (eql T (array-element-type vector))
+      (shiftf (aref vector position) (aref vector (length vector)) NIL)
+      (shiftf (aref vector position) (aref vector (length vector)))))
 
 (defun vector-pop-front (vector)
   "Pops the first element off the vector and returns it.
