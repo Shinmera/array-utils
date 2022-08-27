@@ -129,16 +129,36 @@ be shifted as per ARRAY-SHIFT.
 See VECTOR-PUSH-EXTEND-POSITION"
   (vector-push-extend-position element vector 0))
 
+(defun array-empty-element (array)
+  (let ((aet (array-element-type array)))
+    (cond ((subtypep 'T aet) NIL)
+          ((subtypep 'character aet) #\Nul)
+          ((subtypep 'bit aet) 0)
+          ((subtypep 'short-float aet) 0s0)
+          ((subtypep 'single-float aet) 0f0)
+          ((subtypep 'double-float aet) 0d0)
+          ((subtypep 'long-float aet) 0l0)
+          ((subtypep '(complex bit) aet) #c(0 0))
+          ((subtypep '(complex single-float) aet) #c(0s0 0s0))
+          ((subtypep '(complex single-float) aet) #c(0f0 0f0))
+          ((subtypep '(complex double-float) aet) #c(0d0 0d0))
+          ((subtypep '(complex double-float) aet) #c(0l0 0l0))
+          (T (error "Unknown array specialization.")))))
+
 (defun vector-pop-position (vector position)
   "Pops the element at the given position of the vector and returns it.
 This is potentially very costly as all elements after the given position
-need to be shifted back as per ARRAY-SHIFT.
+need to be shifted back as per ARRAY-SHIFT. The last element is overwritten
+with the default value for the array element type (NIL, or a zero of the
+proper type).
 
 See VECTOR-POP-POSITION*"
   (if (= (1- (length vector)) position)
-      (vector-pop vector)
+      (prog1 (vector-pop vector)
+        (setf (aref vector position) (array-empty-element vector)))
       (prog1 (aref vector position)
-        (array-shift vector :n -1 :from (1+ position)))))
+        (array-shift vector :n -1 :from (1+ position)
+                            :fill (array-empty-element vector)))))
 
 (defun vector-pop-position* (vector position)
   "Pops the element at the given position of the vector and returns it.
