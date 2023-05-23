@@ -7,7 +7,7 @@
 
 (asdf:defsystem array-utils
   :name "Array-Utils"
-  :version "1.1.1"
+  :version "1.2.0"
   :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
