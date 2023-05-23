@@ -225,3 +225,36 @@
         #(0 1 2 3 4 5 6))
   (same (array-utils:vector-append #() #())
         #()))
+
+(define-test slice
+  :parent array-utils
+  (same (array-utils:slice #(0 1 2 3)) #(0 1 2 3))
+  (same (array-utils:slice #(0 1 2 3) 1) #(1 2 3))
+  (same (array-utils:slice #(0 1 2 3) 0 2) #(0 1))
+  (same (array-utils:slice #(0 1 2 3) 1 2) #(1))
+  (same (array-utils:slice #(0 1 2 3) -1) #(3))
+  (same (array-utils:slice #(0 1 2 3) 0 -1) #(0 1 2))
+  (same (array-utils:slice #(0 1 2 3) 0 NIL 1) #(0 1 2 3))
+  (same (array-utils:slice #(0 1 2 3) 0 NIL 2) #(0 2))
+  (same (array-utils:slice #(0 1 2 3) 0 NIL 3) #(0 3)))
+
+(define-test slice*
+  :parent array-utils
+  (same (array-utils:slice* #(0 1 2 3)) #(0 1 2 3))
+  (same (array-utils:slice* #(0 1 2 3) 1) #(1 2 3))
+  (same (array-utils:slice* #(0 1 2 3) 0 2) #(0 1))
+  (same (array-utils:slice* #(0 1 2 3) 1 2) #(1))
+  (same (array-utils:slice* #(0 1 2 3) -1) #(3))
+  (same (array-utils:slice* #(0 1 2 3) 0 -1) #(0 1 2)))
+
+(define-test nslice
+  :parent array-utils
+  (same (array-utils:nslice (cp *array*)) #(0 1 2 3))
+  (same (array-utils:nslice (cp *array*) 1) #(1 2 3))
+  (same (array-utils:nslice (cp *array*) 0 2) #(0 1))
+  (same (array-utils:nslice (cp *array*) 1 2) #(1))
+  (same (array-utils:nslice (cp *array*) -1) #(3))
+  (same (array-utils:nslice (cp *array*) 0 -1) #(0 1 2))
+  (same (array-utils:nslice (cp *array*) 0 NIL 1) #(0 1 2 3))
+  (same (array-utils:nslice (cp *array*) 0 NIL 2) #(0 2))
+  (same (array-utils:nslice (cp *array*) 0 NIL 3) #(0 3)))

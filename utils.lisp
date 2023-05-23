@@ -17,7 +17,10 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
    #:vector-pop-front*
    #:vector-pop-position
    #:vector-pop-position*
-   #:vector-append))
+   #:vector-append
+   #:slice
+   #:slice*
+   #:nslice))
 (in-package #:org.shirakumo.array-utils)
 
 (defun ensure-array-size (array new-space)
@@ -194,4 +197,163 @@ need to be shifted back as per ARRAY-SHIFT."
       (etypecase sequence
         (list (iterate in))
         (vector (iterate across))))
+    vector))
+
+(defmacro do-vector-types (value &body body)
+  `(etypecase ,value
+     (simple-vector
+      ,@body)
+     (simple-string
+      ,@body)
+     ((simple-array (unsigned-byte 8) (*))
+      ,@body)
+     (string
+      ,@body)
+     (vector
+      ,@body)))
+
+(defun slice (vector &optional start end step)
+  "Creates a sub-vector of the given vector.
+
+START --- If positive:
+            the inclusive starting index of the slice
+          If negative:
+            the inclusive starting index of the slice from
+            the end of the vector
+          If NULL: same as zero
+END   --- If positive:
+            the exclusive ending index of the slice
+          If negative:
+            the exclusive ending index of the slice from
+            the end of the vector.
+          If NULL: same as the length of the vector
+STEP  --- If above zero:
+            the step size between elements of the slice
+          If NULL: same as one
+
+Note that this always creates a fresh copy of the vector,
+preserving the element type and other properties.
+
+See NSLICE
+See SLICE*"
+  (declare (optimize speed))
+  (check-type vector vector)
+  (check-type start (or fixnum null))
+  (check-type end (or fixnum null))
+  (check-type step (or (and fixnum (integer 1)) null))
+  (let* ((start (etypecase start
+                  (null 0)
+                  (unsigned-byte start)
+                  (signed-byte (+ (length vector) start))))
+         (end (etypecase end
+                (null (length vector))
+                (unsigned-byte end)
+                (signed-byte (+ (length vector) end))))
+         (step (etypecase step
+                 (null 1)
+                 (unsigned-byte step)))
+         (nsize (ceiling (- end start) step)))
+    (declare (type positive-fixnum start end step))
+    (do-vector-types vector
+      (if (= 1 step)
+          (subseq vector start end)
+          (let ((array (make-array nsize
+                                   :element-type (array-element-type vector)
+                                   :adjustable (adjustable-array-p vector)
+                                   :fill-pointer (array-has-fill-pointer-p vector))))
+            (loop for i of-type positive-fixnum from start below end by step
+                  for j of-type positive-fixnum from 0
+                  do (setf (aref array j) (aref vector i)))
+            array)))))
+
+(defun slice* (vector &optional start end)
+  "Creates a sub-vector of the given vector.
+
+START --- If positive:
+            the inclusive starting index of the slice
+          If negative:
+            the inclusive starting index of the slice from
+            the end of the vector
+          If NULL: same as zero
+END   --- If positive:
+            the exclusive ending index of the slice
+          If negative:
+            the exclusive ending index of the slice from
+            the end of the vector.
+          If NULL: same as the length of the vector
+
+Note that this creates a displaced vector pointing to the
+original vector. It thus shares the data with the original
+vector, and does not support a STEP size other than 1.
+
+See SLICE
+See NSLICE"
+  (declare (optimize speed))
+  (check-type vector vector)
+  (check-type start (or fixnum null))
+  (check-type end (or fixnum null))
+  (let* ((start (etypecase start
+                  (null 0)
+                  (unsigned-byte start)
+                  (signed-byte (+ (length vector) start))))
+         (end (etypecase end
+                (null (length vector))
+                (unsigned-byte end)
+                (signed-byte (+ (length vector) end)))))
+    (declare (type positive-fixnum start end))
+    (make-array (- end start) :element-type (array-element-type vector)
+                              :displaced-to vector
+                              :displaced-index-offset start)))
+
+(defun nslice (vector &optional start end step)
+  "Modifies the vector to a sub-vector of itself.
+
+START --- If positive:
+            the inclusive starting index of the slice
+          If negative:
+            the inclusive starting index of the slice from
+            the end of the vector
+          If NULL: same as zero
+END   --- If positive:
+            the exclusive ending index of the slice
+          If negative:
+            the exclusive ending index of the slice from
+            the end of the vector.
+          If NULL: same as the length of the vector
+STEP  --- If above zero:
+            the step size between elements of the slice
+          If NULL: same as one
+
+Note that this always modifies the passed vector, and
+adjusts the fill pointer, if one is present.
+
+See NSLICE
+See SLICE*"
+  (declare (optimize speed))
+  (check-type vector vector)
+  (check-type start (or fixnum null))
+  (check-type end (or fixnum null))
+  (check-type step (or (and fixnum (integer 1)) null))
+  (let* ((start (etypecase start
+                  (null 0)
+                  (unsigned-byte start)
+                  (signed-byte (+ (length vector) start))))
+         (end (etypecase end
+                (null (length vector))
+                (unsigned-byte end)
+                (signed-byte (+ (length vector) end))))
+         (step (etypecase step
+                 (null 1)
+                 (unsigned-byte step)
+                 (signed-byte step)))
+         (nsize (ceiling (- end start) step)))
+    (declare (type positive-fixnum start end step))
+    (do-vector-types vector
+      (if (= 1 step)
+          (replace vector vector :start1 0 :start2 start :end2 end)
+          (loop for i of-type positive-fixnum from start by step
+                for j of-type positive-fixnum from 0 below nsize
+                do (setf (aref vector j) (aref vector i))))
+      (when (array-has-fill-pointer-p vector)
+        (setf (fill-pointer vector) nsize)))
     vector))
