@@ -1,9 +1,3 @@
-#|
-This file is a part of Array-Utils
-(c) 2014 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
-Author: Nicolas Hafner <shinmera@tymoon.eu>
-|#
-
 (in-package #:cl-user)
 (defpackage #:array-utils
   (:nicknames #:org.shirakumo.array-utils)
