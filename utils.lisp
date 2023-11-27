@@ -11,6 +11,8 @@
    #:vector-pop-front*
    #:vector-pop-position
    #:vector-pop-position*
+   #:vector-pop-element
+   #:vector-pop-element*
    #:vector-append
    #:slice
    #:slice*
@@ -177,6 +179,34 @@ in the vector.
 See VECTOR-POP-FRONT
 See VECTOR-POP-POSITION"
   (vector-pop-position* vector 0))
+
+(defun vector-pop-element (vector element)
+  "Pops the element from the vector and returns it if it was contained.
+This is potentially very costly as all elements after the given position
+need to be shifted back as per ARRAY-SHIFT.
+
+If the array has an element-type of T, the element moved beyond the fill
+pointer is set to NIL to avoid a memory leak.
+
+See VECTOR-POP-POSITION
+See VECTOR-POP-ELEMENT*"
+  (let ((pos (position element vector)))
+    (when pos
+      (vector-pop-position vector pos))))
+
+(defun vector-pop-element* (vector element)
+  "Pops the element from the vector and returns it if it was contained.
+This is faster than VECTOR-POP-ELEMENT, but does not preserve the order of elements
+in the vector.
+
+If the array has an element-type of T, the element moved beyond the fill
+pointer is set to NIL to avoid a memory leak.
+
+See VECTOR-POP-POSITION*
+See VECTOR-POP-ELEMENT"
+  (let ((pos (position element vector)))
+    (when pos
+      (vector-pop-position* vector pos))))
 
 (defun vector-append (vector sequence &optional position)
   "Appends all elements of the sequence at position of the vector and returns it.
