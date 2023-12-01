@@ -131,7 +131,6 @@ See VECTOR-PUSH-EXTEND-POSITION"
 
 (defun vector-push-extend-new (element vector &key key test test-not)
   "Pushes the element onto the back of the vector and extends if necessary, if it is not already part of the vector.
-This is amortised O(1).
 
 If TEST is passed, it is used to compare the elements. Defaults to EQL
 If TEST-NOT is passed, its complement is used to compare the element.
