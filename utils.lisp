@@ -7,6 +7,7 @@
    #:array-shift
    #:vector-push-extend-front
    #:vector-push-extend-position
+   #:vector-push-extend-new
    #:vector-pop-front
    #:vector-pop-front*
    #:vector-pop-position
@@ -127,6 +128,36 @@ be shifted as per ARRAY-SHIFT.
 
 See VECTOR-PUSH-EXTEND-POSITION"
   (vector-push-extend-position element vector 0))
+
+(defun vector-push-extend-new (element vector &key key test test-not)
+  "Pushes the element onto the back of the vector and extends if necessary, if it is not already part of the vector.
+This is amortised O(1).
+
+If TEST is passed, it is used to compare the elements. Defaults to EQL
+If TEST-NOT is passed, its complement is used to compare the element.
+If KEY is passed, it is used to extract the element comparison key for
+both ELEMENT and each element in VECTOR.
+
+Returns the existing element in VECTOR or the new ELEMENT if it was
+inserted at the end.
+
+See CL:VECTOR-PUSH-EXTEND"
+  (check-type vector vector)
+  (cond ((or key test test-not)
+         (let ((key (or key #'identity))
+               (test (or test (if test-not (complement test-not) #'eql)))
+               (comp (funcall key element)))
+           (loop for el across vector
+                 do (when (funcall test (funcall key el) comp)
+                      (return el))
+                 finally (progn (vector-push-extend element vector)
+                                (return element)))))
+        (T
+         (loop for el across vector
+               do (when (eql el element)
+                    (return el))
+               finally (progn (vector-push-extend element vector)
+                              (return element))))))
 
 (defun vector-pop-position (vector position)
   "Pops the element at the given position of the vector and returns it.
