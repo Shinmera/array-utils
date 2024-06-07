@@ -143,9 +143,9 @@ inserted at the end.
 See CL:VECTOR-PUSH-EXTEND"
   (check-type vector vector)
   (cond ((or key test test-not)
-         (let ((key (or key #'identity))
-               (test (or test (if test-not (complement test-not) #'eql)))
-               (comp (funcall key element)))
+         (let* ((key (or key #'identity))
+                (test (or test (if test-not (complement test-not) #'eql)))
+                (comp (funcall key element)))
            (loop for el across vector
                  do (when (funcall test (funcall key el) comp)
                       (return el))
