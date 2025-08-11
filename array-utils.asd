@@ -5,9 +5,9 @@
   :author "Yukari Hafner <shinmera@tymoon.eu>"
   :maintainer "Yukari Hafner <shinmera@tymoon.eu>"
   :description "A few utilities for working with arrays."
-  :homepage "https://Shinmera.github.io/array-utils/"
-  :bug-tracker "https://github.com/Shinmera/array-utils/issues"
-  :source-control (:git "https://github.com/Shinmera/array-utils.git")
+  :homepage "https://shinmera.com/docs/array-utils/"
+  :bug-tracker "https://shinmera.com/project/array-utils/issues"
+  :source-control (:git "https://shinmera.com/project/array-utils.git")
   :serial T
   :components ((:file "utils"))
   :depends-on ()
