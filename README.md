@@ -1,3 +1,4 @@
-About Array-Utils
------------------
-A miniature toolkit that contains some useful shifting/popping/pushing functions for arrays and vectors. This exists mostly because I've used these functions in multiple places already, so splitting it off into its own thing is a good idea. Originally from [Plump](http://shinmera.github.io/plump/).
+# This repository has [moved](https://shinmera.com/projects/array-utils)!
+Due to Microsoft's continued enshittification of the platform this repository has been moved to [Codeberg](https://shinmera.com/projects/array-utils) in August of 2025. It will not receive further updates or patches. **Issues and pull requests will not be looked at here either**, please submit your patches and issue tickets on Codeberg, or send them directly via good old email patches to [shirakumo@tymoon.eu](mailto:shirakumo@tymoon.eu).
+
+Thanks.
